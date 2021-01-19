@@ -47,7 +47,7 @@ def reduce_dimension(df, method='PCA'):
         df = do_tsne(df)
     return df
 
-@st.cache
+# @st.cache
 def do_kmeans(df, num_c):
     kmeans = KMeans(n_clusters=num_c, random_state=SEED)
     clusters = kmeans.fit(df.values)
@@ -63,14 +63,10 @@ def main():
 
     st.title('csv visualizer')
 
-    uploaded_file = None
-    if uploaded_file is None:
-        answer = st.sidebar.button('use example csv')
+    link = '[use example csv](https://raw.githubusercontent.com/root4kaido/csv_visualize_app/main/heart.csv)'
+    st.sidebar.markdown(link, unsafe_allow_html=True)
 
-    if answer:
-        uploaded_file = 'https://raw.githubusercontent.com/root4kaido/csv_visualize_app/main/heart.csv' 
-    else:
-        uploaded_file = st.sidebar.file_uploader("csv file upload", type='csv') 
+    uploaded_file = st.sidebar.file_uploader("csv file upload", type='csv') 
 
     if uploaded_file is not None:
 
@@ -90,7 +86,7 @@ def main():
         num_cluster = st.sidebar.slider('cluster num',  min_value=1, max_value=max_cluster, step=1, value=4)
 
         st.header(dimensionality_reduction_method)
-    
+
         df_std = standardize(df_raw)
         labels = clustering(df_std, clustering_method, num_cluster)
         df_reduce_dim = reduce_dimension(df_std, dimensionality_reduction_method)
