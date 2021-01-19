@@ -5,12 +5,12 @@ import plotly.graph_objects as go
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from MulticoreTSNE import MulticoreTSNE as TSNE
+import umap
 
 from sklearn.cluster import KMeans
 
-import umap
-
-from MulticoreTSNE import MulticoreTSNE as TSNE
+SEED = 100
 
 # @st.cache is speedup option
 
@@ -49,7 +49,7 @@ def reduce_dimension(df, method='PCA'):
 
 @st.cache
 def do_kmeans(df, num_c):
-    kmeans = KMeans(n_clusters=num_c, random_state=100)
+    kmeans = KMeans(n_clusters=num_c, random_state=SEED)
     clusters = kmeans.fit(df.values)
     return clusters.labels_
 
@@ -62,7 +62,15 @@ def clustering(df, method='k-means', num_c=4):
 def main():
 
     st.title('csv visualizer')
-    uploaded_file = st.sidebar.file_uploader("ファイルアップロード", type='csv') 
+
+    uploaded_file = None
+    if uploaded_file is None:
+        answer = st.sidebar.button('use example csv')
+
+    if answer:
+        uploaded_file = 'https://raw.githubusercontent.com/root4kaido/csv_visualize_app/main/heart.csv' 
+    else:
+        uploaded_file = st.sidebar.file_uploader("csv file upload", type='csv') 
 
     if uploaded_file is not None:
 
@@ -77,6 +85,7 @@ def main():
         clustering_method = st.sidebar.selectbox(
             "Clustering method:", ["k-means"]
         )
+
         max_cluster = min(len(df_raw), 10)
         num_cluster = st.sidebar.slider('cluster num',  min_value=1, max_value=max_cluster, step=1, value=4)
 
